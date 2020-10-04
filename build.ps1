@@ -109,8 +109,9 @@ Install-Module -Name PoshSemanticVersion -Force
 
 if (`$Precedence -eq '>' -or `$Precedence -eq '=')
 {
-  Write-Output "##vso[task.setvariable variable=BombardierVersion]${LatestVersion}"
   Write-Output "因為 Chocolatey 的 bombardier 套件版本(`$LatestChocoVersion) 大於等於 bombardier `$LatestVersion 版本，因此不需要發行套件！"
+  Write-Output "##vso[task.setvariable variable=BombardierVersion]canceled"
+  echo "##vso[task.complete result=Canceled;]DONE"
   Exit 0
 }
 else
