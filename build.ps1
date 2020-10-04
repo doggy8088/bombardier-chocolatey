@@ -6,14 +6,13 @@ $LatestVersion = $LatestJSON.tag_name -replace "v" -replace ""
 $LatestVersion | Out-File -FilePath LatestVersion.txt -Encoding UTF8
 
 $LatestChocoVersion = "0.0.0"
-$ListChocoVersions = (choco list bombardier -r --all | C:\Windows\System32\sort.exe /r)
+$AllChocoVersions = (choco list bombardier -r --all | C:\Windows\System32\sort.exe /r)
 
-if ($ListChocoVersions.GetType().FullName -eq 'System.String') {
-  $LatestChocoVersion = ($ListChocoVersions -split '\|')[1]
+if ($AllChocoVersions.GetType().FullName -eq 'System.String') {
+  $LatestChocoVersion = ($AllChocoVersions -split '\|')[1]
 } else {
-  $LatestChocoVersion = ($ListChocoVersions[0] -split '\|')[1]
+  $LatestChocoVersion = ($AllChocoVersions[0] -split '\|')[1]
 }
-
 
 $LatestChocoVersion | Out-File -FilePath LatestChocoVersion.txt -Encoding UTF8
 
@@ -110,11 +109,13 @@ Install-Module -Name PoshSemanticVersion -Force
 
 if (`$Precedence -eq '>' -or `$Precedence -eq '=')
 {
+  Write-Output "##vso[task.setvariable variable=BombardierVersion]${LatestVersion}"
   Write-Output "因為 Chocolatey 的 bombardier 套件版本(`$LatestChocoVersion) 大於等於 bombardier `$LatestVersion 版本，因此不需要發行套件！"
   Exit 0
 }
 else
 {
+  Write-Output "##vso[task.setvariable variable=BombardierVersion]${LatestVersion}"
   Write-Output "準備發行 bombardier `$LatestVersion 版本到 Chocolatey Gallery"
   choco push bombardier.`$LatestVersion.nupkg --source https://push.chocolatey.org/ --key=#{CHOCO_APIKEY}#
 }
