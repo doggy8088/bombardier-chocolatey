@@ -6,7 +6,15 @@ $LatestVersion = $LatestJSON.tag_name -replace "v" -replace ""
 $LatestVersion | Out-File -FilePath LatestVersion.txt -Encoding UTF8
 
 $LatestChocoVersion = "0.0.0"
-$LatestChocoVersion = ((choco list bombardier -r --all | C:\Windows\System32\sort.exe /r)[0] -split '\|')[1]
+$ListChocoVersions = (choco list bombardier -r --all | C:\Windows\System32\sort.exe /r)
+
+if ($ListChocoVersions.GetType().FullName -eq 'System.String') {
+  $LatestChocoVersion = ($ListChocoVersions -split '\|')[1]
+} else {
+  $LatestChocoVersion = ($ListChocoVersions[0] -split '\|')[1]
+}
+
+
 $LatestChocoVersion | Out-File -FilePath LatestChocoVersion.txt -Encoding UTF8
 
 $x86_link = $LatestJSON.assets | ForEach-Object -Process { if ($_.name -eq 'bombardier-windows-386.exe'){ $_.browser_download_url } }
