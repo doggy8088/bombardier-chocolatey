@@ -6,13 +6,17 @@ $LatestVersion = $LatestJSON.tag_name -replace "v" -replace ""
 $LatestVersion | Out-File -FilePath LatestVersion.txt -Encoding UTF8
 
 $LatestChocoVersion = "0.0.0"
-$AllChocoVersions = (choco list bombardier -r --all | C:\Windows\System32\sort.exe /r)
+$AllChocoVersions = (choco search bombardier -r --all | C:\Windows\System32\sort.exe /r)
+
+Write-Output AllChocoVersions = $AllChocoVersions
 
 if ($AllChocoVersions.GetType().FullName -eq 'System.String') {
   $LatestChocoVersion = ($AllChocoVersions -split '\|')[1]
 } else {
   $LatestChocoVersion = ($AllChocoVersions[0] -split '\|')[1]
 }
+
+Write-Output LatestChocoVersion = $LatestChocoVersion
 
 $LatestChocoVersion | Out-File -FilePath LatestChocoVersion.txt -Encoding UTF8
 
